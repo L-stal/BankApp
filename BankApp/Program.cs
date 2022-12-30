@@ -159,16 +159,40 @@ namespace BankApp
         public void exchange()
         {
             int count = 0;
-            Console.WriteLine("Choose accout to exchange money from.");
+            //Prints out accounts and funds
+            Console.WriteLine("Choose accout to depposit money.");
             for (int i = 0; i < assets.accounts[userIndex].Length; i++)
             {
                 Console.Write("|" + i + "|"+assets.accounts[userIndex][i]);
+                for (int j = 0; j < 1; j++)
+                {
+                    Console.WriteLine(assets.funds[userIndex][count++] + " Sek\n");
+                }
             }
-            for (int j = 0; j < 1; j++)
+            count= 0;
+            int choice1 = int.Parse(Console.ReadLine());
+            Console.WriteLine("Choose accout to exchange money from.");
+            for (int i = 0; i < assets.accounts[userIndex].Length; i++)
             {
-                Console.WriteLine(assets.funds[userIndex][count++] + " Sek\n");
+
+                if (choice1 == i)
+                {
+                    count++;
+                }
+                else
+                {
+                    Console.Write("|" + i + "|" + assets.accounts[userIndex][i]);
+                    for (int j = 0; j < 1; j++)
+                    {
+                        Console.WriteLine(assets.funds[userIndex][count++] + " Sek\n");
+                    }
+                }
 
             }
+            int choice2 = int.Parse(Console.ReadLine());
+            Console.WriteLine("How much money do you want transfer?\n");
+            Console.WriteLine("From: " + assets.accounts[userIndex][choice1] + assets.funds[userIndex][choice1] + " Sek");
+            Console.WriteLine("To: " + assets.accounts[userIndex][choice2] + assets.funds[userIndex][choice2] + " Sek\n");
         }
     }
 
