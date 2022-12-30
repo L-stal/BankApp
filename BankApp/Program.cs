@@ -124,10 +124,12 @@ namespace BankApp
                         printAcc();
                     break;
                 case "2":
+                        //functction 
                         exchange();
                     break;
                 case "3":
-                    //Make function to withdaraw funds
+                        //Make function to withdaraw funds
+                        withdraw();
                     break;
                 case "4":
                         Console.WriteLine("You are logging out.");
@@ -193,7 +195,34 @@ namespace BankApp
             Console.WriteLine("How much money do you want transfer?\n");
             Console.WriteLine("From: " + assets.accounts[userIndex][choice1] + assets.funds[userIndex][choice1] + " Sek");
             Console.WriteLine("To: " + assets.accounts[userIndex][choice2] + assets.funds[userIndex][choice2] + " Sek\n");
+            decimal transfer = decimal.Parse(Console.ReadLine());
+            assets.funds[userIndex][choice1] -= transfer;
+            assets.funds[userIndex][choice2] += transfer;
+            Console.WriteLine("test: " + assets.accounts[userIndex][choice1] + assets.funds[userIndex][choice1] + " Sek");
+            Console.WriteLine("test new: " + assets.accounts[userIndex][choice2] + assets.funds[userIndex][choice2] + " Sek\n");
         }
+
+        public void withdraw()
+        {
+            int count = 0;
+            Console.WriteLine("Choose account to withdraw money from");
+            for (int i = 0; i < assets.accounts[userIndex].Length; i++)
+            {
+                Console.Write("|" + i + "|" + assets.accounts[userIndex][i]);
+
+                for (int j = 0; j < 1; j++)
+                {
+                    Console.Write(assets.funds[userIndex][count++] + " Sek\n");
+                }
+            }
+            int choice1 = int.Parse(Console.ReadLine());
+            Console.WriteLine("How much money do you want to withdraw");
+            decimal withdraw = decimal.Parse(Console.ReadLine());
+            assets.funds[userIndex][choice1] -= withdraw;
+            Console.WriteLine("You took out:" + withdraw +  "\n Your new balance is:" + choice1);
+
+        }
+
     }
 
     public class assets
