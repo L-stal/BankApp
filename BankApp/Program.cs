@@ -40,14 +40,14 @@ namespace BankApp
             while (mainMenu)
             {
                 Console.WriteLine("Please enter your username.");
-                Console.WriteLine("User name:");
+                Console.Write("User name:");
                 user = Console.ReadLine();
                 for (int i = 0; i < userNames.Length; i++)
                 {
                     if (userNames[i] == user)
                     {
                         Console.WriteLine("Please enter your pincode");
-                        Console.WriteLine("Pincode:");
+                        Console.Write("Pincode:");
                         pincode = Console.ReadLine();
                         if (pincodes[i] == pincode)
                         {
@@ -107,9 +107,9 @@ namespace BankApp
             _assets.AssetsIndex = userIndex;
 
         bool accountMenu = true;
-        while (accountMenu)
-        {
-            Console.WriteLine("What would you like to do ?");
+            while (accountMenu)
+            {
+            Console.WriteLine("What would you like to do ?\n");
             Console.WriteLine("[1]: Look over your accounts and funds. ");
             Console.WriteLine("[2]: Deposit funds between accounts. ");
             Console.WriteLine("[3]: Withdraw funds.");
@@ -121,26 +121,36 @@ namespace BankApp
             {
                 case "1":
                         //make function prints out accoouts and funds
+                        Console.Clear();
                         printAcc();
-                    break;
+                        Console.Clear();
+                        break;
                 case "2":
                         //functction 
+                        Console.Clear();
                         exchange();
+                        Console.Clear();
                     break;
                 case "3":
                         //Make function to withdaraw funds
+                        Console.Clear();
                         withdraw();
-                    break;
+                        Console.Clear();
+                        break;
                 case "4":
+                        //logging out
+                        Console.Clear();
                         Console.WriteLine("You are logging out.");
                         Console.WriteLine("Press Any key to continue");
                         Console.Read();
                         Console.Clear();
-                        MainMenu.MainLogin();
+                        accountMenu = false;
                     break;
                 default:
                         // write invalid input 3 
-                        Console.WriteLine("Invalid input");
+                        Console.WriteLine("Invalid input,press [Enter] to countinue");
+                        Console.ReadLine();
+                        Console.Clear();
                     break;
             }
         }
@@ -150,19 +160,21 @@ namespace BankApp
             int count = 0;
             for (int i = 0; i < assets.accounts[userIndex].Length; i++)
             {
-                Console.Write("|" + i + "|" +assets.accounts[userIndex][i]);
+                Console.Write("\n" + "|" + i + "|" +assets.accounts[userIndex][i]);
 
                 for (int j = 0; j < 1; j++)
                 {
                     Console.Write(assets.funds[userIndex][count++] + " Sek\n");
                 }
-            }                  
+            }  
+            Console.WriteLine("\nPress Enter to continue");
+            Console.ReadLine();
         }
         public void exchange()
         {
             int count = 0;
             //Prints out accounts and funds
-            Console.WriteLine("Choose accout to depposit money.");
+            Console.WriteLine("Choose accout to depposit money.\n");
             for (int i = 0; i < assets.accounts[userIndex].Length; i++)
             {
                 Console.Write("|" + i + "|"+assets.accounts[userIndex][i]);
@@ -192,20 +204,24 @@ namespace BankApp
 
             }
             int choice2 = int.Parse(Console.ReadLine());
+            Console.Clear();
             Console.WriteLine("How much money do you want transfer?\n");
             Console.WriteLine("From: " + assets.accounts[userIndex][choice1] + assets.funds[userIndex][choice1] + " Sek");
             Console.WriteLine("To: " + assets.accounts[userIndex][choice2] + assets.funds[userIndex][choice2] + " Sek\n");
-            decimal transfer = decimal.Parse(Console.ReadLine());
-            assets.funds[userIndex][choice1] -= transfer;
-            assets.funds[userIndex][choice2] += transfer;
-            Console.WriteLine("test: " + assets.accounts[userIndex][choice1] + assets.funds[userIndex][choice1] + " Sek");
-            Console.WriteLine("test new: " + assets.accounts[userIndex][choice2] + assets.funds[userIndex][choice2] + " Sek\n");
+            if (choice1 > 0)
+            {
+                decimal transfer = decimal.Parse(Console.ReadLine());
+                assets.funds[userIndex][choice1] -= transfer;
+                assets.funds[userIndex][choice2] += transfer;
+                Console.WriteLine("test: " + assets.accounts[userIndex][choice1] + assets.funds[userIndex][choice1] + " Sek");
+                Console.WriteLine("test new: " + assets.accounts[userIndex][choice2] + assets.funds[userIndex][choice2] + " Sek\n");
+            }
         }
 
         public void withdraw()
         {
             int count = 0;
-            Console.WriteLine("Choose account to withdraw money from");
+            Console.WriteLine("Choose account to withdraw money from\n");
             for (int i = 0; i < assets.accounts[userIndex].Length; i++)
             {
                 Console.Write("|" + i + "|" + assets.accounts[userIndex][i]);
@@ -217,9 +233,11 @@ namespace BankApp
             }
             int choice1 = int.Parse(Console.ReadLine());
             Console.WriteLine("How much money do you want to withdraw");
-            decimal withdraw = decimal.Parse(Console.ReadLine());
-            assets.funds[userIndex][choice1] -= withdraw;
-            Console.WriteLine("You took out:" + withdraw +  "\n Your new balance is:" + choice1);
+                decimal withdraw = decimal.Parse(Console.ReadLine());
+                assets.funds[userIndex][choice1] -= withdraw;
+                Console.WriteLine("You took out:" + withdraw + "\n Your new balance is:" + choice1);
+                Console.WriteLine("Press [Enter] to continue");
+                Console.ReadLine();
 
         }
 
