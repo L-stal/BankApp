@@ -35,6 +35,7 @@
             {
                 Console.WriteLine("Please enter your user name.");
                 Console.Write("User name:");
+                
                 user = Console.ReadLine();
                 // A for loops that compare user input to the names in userNames[]
                 for (int i = 0; i < userNames.Length; i++)
@@ -82,20 +83,10 @@
                             MainLogin();
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine("Invalid input, please try again");
-                        Console.Write(".");
-                        Thread.Sleep(1000);
-                        Console.Write(".");
-                        Thread.Sleep(1000);
-                        Console.Write(".");
-                        Thread.Sleep(1000);
-                        Console.Clear();
-                        break;
 
-                    }
                 }
+                Console.WriteLine("Invalid input, please try again");
+                delay();
             }
         }
 
@@ -311,5 +302,18 @@
             , new decimal[] {1000,12394,12341,12412,451234,12512}
         };
         }
+
+        public static void delay()
+        {
+            int delay = 0;
+            for (int i = 0; delay < 15; i++)
+            {
+                delay++;
+                Console.Write(".");
+                Thread.Sleep(200);
+            }
+            Console.Clear();
+        }
+
     }
 }
