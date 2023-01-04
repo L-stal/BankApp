@@ -35,7 +35,7 @@
             {
                 Console.WriteLine("Please enter your user name.");
                 Console.Write("User name:");
-                
+
                 user = Console.ReadLine();
                 // A for loops that compare user input to the names in userNames[]
                 for (int i = 0; i < userNames.Length; i++)
@@ -174,6 +174,7 @@
             public void exchange()
             {
                 int count = 0;
+                int choice1;
                 Console.WriteLine("Choose accout to depposit money to.\n");
 
                 for (int i = 0; i < assets.accounts[userIndex].Length; i++)
@@ -184,51 +185,81 @@
                         Console.WriteLine(assets.funds[userIndex][count++] + " Sek\n");
                     }
                 }
+
                 count = 0;
-                int choice1 = int.Parse(Console.ReadLine());
+                Console.Write("Enter Your choice");
+                bool success = int.TryParse(Console.ReadLine(), out choice1);
 
-                if (choice1 < assets.accounts[userIndex].Length)
+                if (success)
                 {
-                    Console.WriteLine("Choose accout to exchange money from.\n");
-                    for (int i = 0; i < assets.accounts[userIndex].Length; i++)
+                    if (choice1 < assets.accounts[userIndex].Length)
                     {
+                        Console.WriteLine("Choose accout to exchange money from.\n");
+                        for (int i = 0; i < assets.accounts[userIndex].Length; i++)
+                        {
 
-                        if (choice1 == i)
-                        {
-                            count++;
-                        }
-                        else
-                        {
-                            Console.Write("|" + i + "|" + assets.accounts[userIndex][i] + ": ");
-                            for (int j = 0; j < 1; j++)
+                            if (choice1 == i)
                             {
-                                Console.WriteLine(assets.funds[userIndex][count++] + " Sek\n");
+                                count++;
+                            }
+                            else
+                            {
+                                Console.Write("[" + i + "]" + assets.accounts[userIndex][i] + ": ");
+                                for (int j = 0; j < 1; j++)
+                                {
+                                    Console.WriteLine(assets.funds[userIndex][count++] + " Sek\n");
+                                }
+                            }
+                        }
+                        bool succ = true;
+                        while (succ)
+                        {
+                            Console.WriteLine("Enter your choice");
+                            int choice2 = int.Parse(Console.ReadLine());
+                            if (choice1 != choice2)
+                            {
+                                Console.Clear();
+                                succ = false;
+                                Console.WriteLine("How much money do you want transfer?\n");
+                                Console.WriteLine("From:" + assets.accounts[userIndex][choice1] + "  " + assets.funds[userIndex][choice1] + " Sek");
+                                Console.WriteLine("--------");
+                                Console.WriteLine("To:" + assets.accounts[userIndex][choice2] + " " + assets.funds[userIndex][choice2] + " Sek\n");
+                                decimal transfer = decimal.Parse(Console.ReadLine());
+                                assets.funds[userIndex][choice1] -= transfer;
+                                assets.funds[userIndex][choice2] += transfer;
+                                Console.WriteLine("You exchanges money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
+                                Console.WriteLine("Your new balance is.");
+                                Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
+                                Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
+                                Console.WriteLine("Press [Enter] to continue");
+                                Console.ReadLine();
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("You cant transfer money to the same account , duh!");
+                                Console.ReadLine();
+                                Console.Clear();
                             }
                         }
                     }
-                    int choice2 = int.Parse(Console.ReadLine());
-                    Console.Clear();
-                    Console.WriteLine("How much money do you want transfer?\n");
-                    Console.WriteLine("From:" + assets.accounts[userIndex][choice1] + "  " + assets.funds[userIndex][choice1] + " Sek");
-                    Console.WriteLine("--------");
-                    Console.WriteLine("To:" + assets.accounts[userIndex][choice2] + " " + assets.funds[userIndex][choice2] + " Sek\n");
-                    decimal transfer = decimal.Parse(Console.ReadLine());
-                    assets.funds[userIndex][choice1] -= transfer;
-                    assets.funds[userIndex][choice2] += transfer;
-                    Console.WriteLine("You exchanges money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
-                    Console.WriteLine("Your new balance is.");
-                    Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
-                    Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
-                    Console.WriteLine("Press [Enter] to continue");
-                    Console.ReadLine();
+                    else
+                    {
+                        Console.WriteLine("No account found  with that number. Please try again");
+                        Console.ReadLine();
+                        Console.Clear();
+                        exchange();
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("No account found  with that number. Please try again");
+                    Console.WriteLine("Input a [NUMBER] from the list above.");
+                    Console.ReadLine();
+                    Console.Clear();
+                    exchange();
                 }
-
             }
-
+           
             public void withdraw()
             {
                 //FAST PÅ BARA SAVING FIX IT
