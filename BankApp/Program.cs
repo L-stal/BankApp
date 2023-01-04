@@ -175,7 +175,7 @@
             {
                 int count = 0;
                 int choice1;
-                Console.WriteLine("Choose accout to depposit money to.\n");
+                Console.WriteLine("Choose accout to deposit money to.\n");
 
                 for (int i = 0; i < assets.accounts[userIndex].Length; i++)
                 {
@@ -187,8 +187,10 @@
                 }
 
                 count = 0;
-                Console.Write("Enter Your choice");
+                Console.WriteLine("Choose from the list above");
+                Console.Write("Enter Your choice :");
                 bool success = int.TryParse(Console.ReadLine(), out choice1);
+                Console.Write("\n");
 
                 if (success)
                 {
@@ -214,7 +216,7 @@
                         bool succ = true;
                         while (succ)
                         {
-                            Console.WriteLine("Enter your choice");
+                            Console.Write("Enter Your choice: ");
                             int choice2 = int.Parse(Console.ReadLine());
                             if (choice1 != choice2)
                             {
@@ -224,20 +226,38 @@
                                 Console.WriteLine("From:" + assets.accounts[userIndex][choice1] + "  " + assets.funds[userIndex][choice1] + " Sek");
                                 Console.WriteLine("--------");
                                 Console.WriteLine("To:" + assets.accounts[userIndex][choice2] + " " + assets.funds[userIndex][choice2] + " Sek\n");
-                                decimal transfer = decimal.Parse(Console.ReadLine());
-                                assets.funds[userIndex][choice1] -= transfer;
-                                assets.funds[userIndex][choice2] += transfer;
-                                Console.WriteLine("You exchanges money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
-                                Console.WriteLine("Your new balance is.");
-                                Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
-                                Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
-                                Console.WriteLine("Press [Enter] to continue");
-                                Console.ReadLine();
-                                break;
+                                Console.Write("Enter the amout you want to transfer: ");
+                                decimal transfer = 0;
+                                bool transfersucc = decimal.TryParse(Console.ReadLine(), out transfer);
+                                while (transfersucc)
+                                {
+                                    if (transfer < assets.funds[userIndex][choice1] && transfer > 0)
+                                    {
+                                        assets.funds[userIndex][choice1] -= transfer;
+                                        assets.funds[userIndex][choice2] += transfer;
+                                        Console.WriteLine("You exchanges money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
+                                        Console.WriteLine("Your new balance is.");
+                                        Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
+                                        Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
+                                        Console.WriteLine("Press [Enter] to continue");
+                                        Console.ReadLine();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Invalid amount to transfer");
+                                        Console.WriteLine("Sending you back to deposit menu");
+                                        delay();
+                                        exchange();
+                                    }
+                                }
+                                Console.WriteLine("Invalid input \nSending you back to deposit menu");
+                                delay();
+                                exchange();
                             }
                             else
                             {
-                                Console.WriteLine("You cant transfer money to the same account , duh!");
+                                Console.WriteLine("You cant transfer money to the same account");
                                 Console.ReadLine();
                                 Console.Clear();
                             }
@@ -248,6 +268,7 @@
                         Console.WriteLine("No account found  with that number. Please try again");
                         Console.ReadLine();
                         Console.Clear();
+                        delay();
                         exchange();
                     }
                 }
