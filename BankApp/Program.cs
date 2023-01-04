@@ -5,6 +5,7 @@
 
         public static void Main(string[] args)
         {
+
             Console.WriteLine("Welcome to Generic GreedyBank");
             Console.WriteLine("Press Enter to countinue...");
             Console.ReadLine();
@@ -52,29 +53,34 @@
                             Console.WriteLine("Login succsesful");
                             _accountTrue.UserIndex = i;
                             _accountTrue.accountTrue();
+                            /* FIXA GÅ TILL BAKA TILL MAIN BUGG
+                            -
+                                -
+                                -
+                                -
+                                -
+                                -
+                                -
+                                -
+                                -
+                                -
+                                -*/
+                            break;
                         }
                         if (pincodes[i] != pincode)
                         {
                             tries++;
-
-                            Console.WriteLine("Invalid input, please try again");
-                            Console.Write(".");
-                            Thread.Sleep(1000);
-                            Console.Write(".");
-                            Thread.Sleep(1000);
-                            Console.Write(".");
-                            Thread.Sleep(1000);
-                            Console.Clear();
+                            delay();
 
                         }
                         if (tries >= 3)
                         {
                             Console.WriteLine("Too Many tries, account locked for 3 mins");
-                            Thread.Sleep(6000);
+                            Thread.Sleep(60000);
                             Console.WriteLine("Please try again in 2 mins..");
-                            Thread.Sleep(6000);
+                            Thread.Sleep(60000);
                             Console.WriteLine("Please try again in 1 min...");
-                            Thread.Sleep(6000);
+                            Thread.Sleep(60000);
                             tries = 0;
                             Console.WriteLine("You can now try to log in again");
                             Console.WriteLine("Press Any key to continue");
@@ -83,10 +89,9 @@
                             MainLogin();
                         }
                     }
-
                 }
-                Console.WriteLine("Invalid input, please try again");
-                delay();
+             Console.WriteLine("Invalid input, please try again");
+             delay();
             }
         }
 
@@ -142,8 +147,7 @@
                             //logging out
                             Console.Clear();
                             Console.WriteLine("You are logging out.");
-                            Console.WriteLine("Press Any key to continue");
-                            Console.Read();
+                            delay();
                             Console.Clear();
                             accountMenu = false;
                             break;
@@ -266,8 +270,6 @@
                     else
                     {
                         Console.WriteLine("No account found  with that number. Please try again");
-                        Console.ReadLine();
-                        Console.Clear();
                         delay();
                         exchange();
                     }
@@ -280,7 +282,7 @@
                     exchange();
                 }
             }
-           
+
             public void withdraw()
             {
                 //FAST PÅ BARA SAVING FIX IT
