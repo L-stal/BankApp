@@ -1,16 +1,22 @@
-﻿namespace BankApp
+﻿using System.Transactions;
+
+namespace BankApp
 {
     public class RunMenu
     {
 
         public static void Main(string[] args)
         {
+            bool runMenu = true;
+            while (runMenu)
+            {
+                Console.WriteLine("Welcome to Generic GreedyBank");
+                Console.WriteLine("Press Enter to countinue...");
+                Console.ReadLine();
+                Console.Clear();
+                MainMenu.MainLogin();
+            }
 
-            Console.WriteLine("Welcome to Generic GreedyBank");
-            Console.WriteLine("Press Enter to countinue...");
-            Console.ReadLine();
-            Console.Clear();
-            MainMenu.MainLogin();
 
         }
 
@@ -20,6 +26,8 @@
         //Acount in main menu for comparing index valus, if index valus are the same run function AccountTrue
         static string[] userNames = { "Robbe", "Kjell", "Leo", "Fibbe", "Mimmi" };
         static string[] pincodes = { "123", "12345", "1337", "13372", "13373" };
+        //Save login tries to lock the user out //WORKING ON IT//-------------------------------------------
+        static int[] logins = { 0, 0, 0, 0, 0, };
         static string user;
         static string pincode;
         //activeUser sends value in to  class Account ot know what account to show, activUser gets its value if the login is a succses
@@ -36,8 +44,8 @@
             {
                 Console.WriteLine("Please enter your user name.");
                 Console.Write("User name:");
-
                 user = Console.ReadLine();
+
                 // A for loops that compare user input to the names in userNames[]
                 for (int i = 0; i < userNames.Length; i++)
                 {
@@ -49,56 +57,48 @@
                         pincode = Console.ReadLine();
                         if (pincodes[i] == pincode)
                         {
+                            
                             Console.Clear();
                             Console.WriteLine("Login succsesful");
                             _accountTrue.UserIndex = i;
                             _accountTrue.accountTrue();
-                            /* FIXA GÅ TILL BAKA TILL MAIN BUGG
-                            -
-                                -
-                                -
-                                -
-                                -
-                                -
-                                -
-                                -
-                                -
-                                -
-                                -*/
-                            break;
+                            Console.WriteLine("Logout succssesful. Have a great day " + user + "!");
+                            Console.WriteLine("----RETURNING TO LOGIN-----");
+                            delay();
+                            mainMenu = false;
+                            return;
                         }
                         if (pincodes[i] != pincode)
                         {
-                            tries++;
-                            delay();
+                            logins[i] += 1;
 
                         }
-                        if (tries >= 3)
+                        if (logins[i] >= 3)
                         {
                             Console.WriteLine("Too Many tries, account locked for 3 mins");
-                            Thread.Sleep(60000);
+                            Thread.Sleep(6000);
                             Console.WriteLine("Please try again in 2 mins..");
-                            Thread.Sleep(60000);
+                            Thread.Sleep(6000);
                             Console.WriteLine("Please try again in 1 min...");
-                            Thread.Sleep(60000);
-                            tries = 0;
+                            Thread.Sleep(6000);
+                            logins[i] = 0;
                             Console.WriteLine("You can now try to log in again");
                             Console.WriteLine("Press Any key to continue");
                             Console.ReadLine();
                             Console.Clear();
+                            Console.WriteLine("Restarting program, please wait.");
+                            delay();
                             MainLogin();
                         }
                     }
                 }
-             Console.WriteLine("Invalid input, please try again");
-             delay();
+                Console.WriteLine("Invalid input, please try again.");
+                delay();
             }
         }
 
         public class Account
         {
-
-
             protected int userIndex;
 
             public int UserIndex
@@ -125,34 +125,34 @@
 
                     switch (command)
                     {
-                        case "1":
-                            //make function prints out accoouts and funds
+                        //Case 1 prints out the account for the activc user
+                        case "1":                           
                             Console.Clear();
                             printAcc();
                             Console.Clear();
                             break;
+                        //Case 2 is the option to deposit funds between the users OWN accounts
                         case "2":
-                            //functction 
                             Console.Clear();
                             exchange();
                             Console.Clear();
                             break;
+                        //Case 3 is the method for withdrawing funds
                         case "3":
-                            //Make function to withdaraw funds
                             Console.Clear();
                             withdraw();
                             Console.Clear();
                             break;
+                        //Case 4 lets the user log out and back to the start screen
                         case "4":
-                            //logging out
                             Console.Clear();
                             Console.WriteLine("You are logging out.");
                             delay();
                             Console.Clear();
                             accountMenu = false;
                             break;
+                        //If the string command dose not mean the requirements this prints out an error message
                         default:
-                            // If the user inputs a wrong number print this
                             Console.WriteLine("Invalid input,press [Enter] to countinue");
                             Console.ReadLine();
                             Console.Clear();
@@ -160,6 +160,9 @@
                     }
                 }
             }
+
+            //A super simple nester for loop to print out the jagged array in the assets class for the active use
+            //MAKE OPTION TO GO BACK WORKING ON IT - LOW PRIO
             public void printAcc()
             {
                 int count = 0;
@@ -243,7 +246,7 @@
                                         Console.WriteLine("Your new balance is.");
                                         Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
                                         Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
-                                        Console.WriteLine("Press [Enter] to continue");
+                                        Console.WriteLine("Press [Enter] to continue.");
                                         Console.ReadLine();
                                         break;
                                     }
@@ -261,9 +264,11 @@
                             }
                             else
                             {
-                                Console.WriteLine("You cant transfer money to the same account");
+                                Console.WriteLine("You cant transfer money to the same account.");
+                                Console.WriteLine("Press [Enter] to continue.");
                                 Console.ReadLine();
                                 Console.Clear();
+                                exchange();
                             }
                         }
                     }
@@ -287,37 +292,45 @@
             {
                 //FAST PÅ BARA SAVING FIX IT
                 int count = 0;
-                Console.WriteLine("Choose account to withdraw money from\n");
+                Console.WriteLine("Choose account to withdraw money from.\n");
                 for (int i = 0; i < assets.accounts[userIndex].Length; i++)
                 {
-                    Console.Write("|" + i + "|" + assets.accounts[userIndex][i]);
+                    Console.Write("[" + i + "]" + assets.accounts[userIndex][i] + ": ");
 
                     for (int j = 0; j < 1; j++)
                     {
                         Console.Write(assets.funds[userIndex][count++] + " Sek\n");
+                        
                     }
+                    Console.ReadLine(); 
                 }
+
+                /*
                 try
                 {
+                    Console.Write("Enter account number: ");
                     int choice1;
                     choice1 = int.Parse(Console.ReadLine());
-                    Console.WriteLine("How much money do you want to withdraw?");
-                    decimal withdrawM = decimal.Parse(Console.ReadLine());
-                    //Fixa så man inte kan skriva tillexemple 1001 och välja konto
-                    if (withdrawM <= choice1)
-                    {
-                        assets.funds[userIndex][choice1] -= withdrawM;
-                        Console.WriteLine("You took out:" + withdrawM + "\n Your new balance is:" + choice1);
-                        Console.WriteLine("Press [Enter] to continue");
-                        Console.ReadLine();
-                    }
-                    else
-                    {
-                        Console.WriteLine("There is not enough money to make the transfer. Please choose another account");
-                        Console.ReadLine();
-                        Console.Clear();
-                        withdraw();
+                    if (choice1 <  assets.funds[userIndex].Length) {
+                        Console.WriteLine("How much money do you want to withdraw?");
+                        Console.Write("Enter the amount: ");
+                        decimal withdrawM = decimal.Parse(Console.ReadLine());
+                        //Fixa så man inte kan skriva tillexemple 1001 och välja konto
+                        if (withdrawM <= choice1)
+                        {
+                            assets.funds[userIndex][choice1] -= withdrawM;
+                            Console.WriteLine("You took out:" + withdrawM + "\n Your new balance is:" + choice1);
+                            Console.WriteLine("Press [Enter] to continue");
+                            Console.ReadLine();
+                        }
+                        else
+                        {
+                            Console.WriteLine("There is not enough money to make the transfer. Please choose another account");
+                            Console.ReadLine();
+                            Console.Clear();
+                            withdraw();
 
+                        }
                     }
                 }
                 catch
@@ -326,8 +339,8 @@
                     Console.ReadLine();
                     Console.Clear();
                     withdraw();
+            }*/
                 }
-            }
 
         }
 
@@ -346,7 +359,7 @@
             new string[] {"Savings", "Salary","Computer Parts","Goods"},
             new string[] {"Savings", "Salary","Cash for snacks","Vet Savings","Toy Account"},
             new string[] {"Savings", "Salary", "Knitting Salary","Cosplay funds","Fibbes Xmas present","Gaming Gear"},
-        };
+             };
             public static decimal[][] funds =
             {
             new decimal[] {1000,20000}
@@ -354,9 +367,11 @@
             , new decimal[] {1000,20000,12345,12341}
             , new decimal[] {1000,12394,12349,123494,129394}
             , new decimal[] {1000,12394,12341,12412,451234,12512}
-        };
+             };
         }
 
+        //Made a method for the delays for cleaner code
+        //Simple yet efective
         public static void delay()
         {
             int delay = 0;
@@ -364,7 +379,7 @@
             {
                 delay++;
                 Console.Write(".");
-                Thread.Sleep(200);
+                Thread.Sleep(150);
             }
             Console.Clear();
         }
