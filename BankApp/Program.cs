@@ -168,7 +168,7 @@ namespace BankApp
                 int count = 0;
                 for (int i = 0; i < assets.accounts[userIndex].Length; i++)
                 {
-                    Console.Write("\n" + "[" + i + "]" + assets.accounts[userIndex][i]);
+                    Console.Write("\n" + "[" + i + "]" + assets.accounts[userIndex][i] + ": ");
 
                     for (int j = 0; j < 1; j++)
                     {
@@ -203,7 +203,7 @@ namespace BankApp
                 {
                     if (choice1 < assets.accounts[userIndex].Length)
                     {
-                        Console.WriteLine("Choose accout to exchange money from.\n");
+                        Console.WriteLine("Choose account to deposit money from.\n");
                         for (int i = 0; i < assets.accounts[userIndex].Length; i++)
                         {
 
@@ -236,9 +236,12 @@ namespace BankApp
                                 Console.Write("Enter the amout you want to transfer: ");
                                 decimal transfer = 0;
                                 bool transfersucc = decimal.TryParse(Console.ReadLine(), out transfer);
+                                Console.WriteLine("Checking balance, please hold.");
+                                delay();
+                                Console.Clear();
                                 while (transfersucc)
                                 {
-                                    if (transfer < assets.funds[userIndex][choice1] && transfer > 0)
+                                    if (transfer <= assets.funds[userIndex][choice1] && transfer > 0)
                                     {
                                         assets.funds[userIndex][choice1] -= transfer;
                                         assets.funds[userIndex][choice2] += transfer;
@@ -292,6 +295,7 @@ namespace BankApp
             {
                 //FAST PÅ BARA SAVING FIX IT
                 int count = 0;
+                int choice;
                 Console.WriteLine("Choose account to withdraw money from.\n");
                 for (int i = 0; i < assets.accounts[userIndex].Length; i++)
                 {
@@ -302,8 +306,65 @@ namespace BankApp
                         Console.Write(assets.funds[userIndex][count++] + " Sek\n");
                         
                     }
-                    Console.ReadLine(); 
+                    
                 }
+                Console.Write("\nEnter account number: ");
+                bool success = int.TryParse(Console.ReadLine(), out choice);
+
+                while(success)
+                {
+                    if (choice < assets.funds[userIndex].Length)
+                    {
+                        decimal withdrawM;
+                        Console.WriteLine("How much money do you want to withdraw?");
+                        Console.Write("Amount: ");
+                        bool transferM = decimal.TryParse(Console.ReadLine(), out withdrawM);
+
+
+                        while(transferM)
+                        {
+                            Console.WriteLine("Checking balance, please hold.");
+                            delay();
+
+                            if (withdrawM <= assets.funds[userIndex][choice] && withdrawM > 0)
+                            {
+                                assets.funds[userIndex][choice] -= withdrawM;                                
+                                Console.WriteLine("Amount withdrawn: " + assets.funds[userIndex][choice]);
+                                Console.WriteLine("Your new account balance is.");
+                                Console.WriteLine(assets.accounts[userIndex][choice] + ": " + assets.funds[userIndex][choice] + " Sek");                               
+                                Console.WriteLine("Press [Enter] to continue.");
+                                Console.ReadLine();
+                                return;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid amount to withdraw");
+                                Console.WriteLine("Sending you back to the wtihdraw menu");
+                                delay();
+                                withdraw();
+                            }
+                        }
+
+
+
+                    }
+                    else
+                    {
+                    Console.WriteLine("No account found with that number.");
+                        Console.WriteLine("Enter a NUMBER from the list above.");
+                        delay();
+                        success = false;
+                        withdraw();
+                    }
+                }
+                if (!success)
+                {
+                    Console.WriteLine("Invalid input, please enter a NUMBER.");
+                    delay();
+                    withdraw();
+                }
+
+
 
                 /*
                 try
@@ -340,7 +401,7 @@ namespace BankApp
                     Console.Clear();
                     withdraw();
             }*/
-                }
+            }
 
         }
 
@@ -380,7 +441,15 @@ namespace BankApp
                 delay++;
                 Console.Write(".");
                 Thread.Sleep(150);
+                if (delay > 10)
+                {
+                    delay++;
+                    Console.Write(".");
+                    Thread.Sleep(100);
+                }
             }
+            Console.Write('\u2713');
+            Thread.Sleep(600);
             Console.Clear();
         }
 
