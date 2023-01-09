@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Transactions;
 
@@ -9,6 +10,7 @@ namespace BankApp
 
         public static void Main(string[] args)
         {
+            
 
             bool runMenu = true;
             while (runMenu)
@@ -24,6 +26,7 @@ namespace BankApp
                     text = File.ReadAllText(".\\welcome.txt");
 
                 }
+                
                 Console.WriteLine(text);
                 Console.WriteLine("Press Enter to countinue...");
                 Console.ReadLine();
@@ -47,12 +50,10 @@ namespace BankApp
         //activeUser sends value in to  class Account ot know what account to show, activUser gets its value if the login is a succses
         //it gets the same value  as index value from userNames and pincodes
         public static int activeUser;
-        public static void MainLogin()
+        public static async void MainLogin()
         {
             var _accountTrue = new Account();
             bool mainMenu = true;
-            //Tries for login
-            int tries = 0;
 
             while (mainMenu)
             {
@@ -66,44 +67,40 @@ namespace BankApp
                     //IF the input matches a userName login , user gets to input password
                     if (userNames[i] == user)
                     {
-                        Console.WriteLine("Please enter your pincode");
-                        Console.Write("Pincode:");
-                        pincode = Console.ReadLine();
-                        delay();
-                        if (pincodes[i] == pincode)
+                        if (logins[i] < 3)
                         {
-
-                            Console.Clear();
-                            Console.WriteLine("Login succsesful");
-                            _accountTrue.UserIndex = i;
-                            _accountTrue.accountTrue(user);
-                            Console.WriteLine("Logout succssesful. Have a great day " + user + "!");
-                            Console.WriteLine("----RETURNING TO LOGIN-----");
-                            delay();
-                            mainMenu = false;
-                            return;
-                        }
-                        if (pincodes[i] != pincode)
-                        {
-                            logins[i] += 1;
-
-                        }
-                        if (logins[i] >= 3)
-                        {
-                            Console.WriteLine("Too Many tries, account locked for 3 mins");
-                            Thread.Sleep(6000);
-                            Console.WriteLine("Please try again in 2 mins..");
-                            Thread.Sleep(6000);
-                            Console.WriteLine("Please try again in 1 min...");
-                            Thread.Sleep(6000);
-                            logins[i] = 0;
-                            Console.WriteLine("You can now try to log in again");
-                            Console.WriteLine("Press Any key to continue");
+                            Console.WriteLine("Please enter your pincode");
+                            Console.Write("Pincode:");
+                            pincode = Console.ReadLine();
+                            Console.WriteLine(logins[i]);
                             Console.ReadLine();
-                            Console.Clear();
-                            Console.WriteLine("Restarting program, please wait.");
-                            delay();
-                            MainLogin();
+                            if (pincodes[i] == pincode)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Login succsesful");
+                                _accountTrue.UserIndex = i;
+                                _accountTrue.accountTrue(user);
+                                Console.WriteLine("Logout succssesful. Have a great day " + user + "!");
+                                Console.WriteLine("----RETURNING TO LOGIN-----");
+                                delay();
+                                mainMenu = false;
+                                return;
+                            }
+                            if (pincodes[i] != pincode)
+                            {
+                                logins[i] += 1;
+
+
+                            }
+                            if (logins[i] >= 3)
+                            {
+                                Stopwatch start = Stopwatch.StartNew();
+                                if(start.Elapsed.TotalMinutes > 1)
+                                {
+                                    logins[i] = 0;
+                                }
+
+                            }
                         }
                     }
                 }
@@ -158,7 +155,6 @@ namespace BankApp
                             Console.Clear();
                             withdraw();
                             Console.Clear();
-                            accountMenu = false;
                             break;
                         //Deposit money
                         case "4":
@@ -358,7 +354,7 @@ namespace BankApp
                                     assets.funds[userIndex][choice] -= withdrawM;
                                     Console.WriteLine("Amount withdrawn: " + assets.funds[userIndex][choice]);
                                     Console.WriteLine("Your new account balance is.");
-                                    Console.WriteLine(assets.accounts[userIndex][choice] + ": " + assets.funds[userIndex][choice] + " Sek");
+                                    Console.WriteLine(assets.accounts[userIndex][choice] + ": " + assets.funds[userIndex][choice] + " Sek") ;
                                     Console.WriteLine("Press [Enter] to continue.");
                                     Console.ReadLine();
                                     return;
@@ -388,7 +384,11 @@ namespace BankApp
                                 Console.WriteLine(pintries);
                                 pintries++;
                             }
+
                         }
+                        Console.WriteLine("Invalid input");
+                        Console.WriteLine("Press [ENTER] to continue");
+
 
 
 
@@ -473,18 +473,18 @@ namespace BankApp
                         if (choice < assets.funds[userIndex].Length)
                         {
                             decimal depositM;
-                            Console.WriteLine("Enter the amount you want to deposit to" + assets.accounts[userIndex][choice]);
+                            Console.WriteLine("Enter the amount you want to deposit to: " + assets.accounts[userIndex][choice]);
                             Console.Write("Amount: ");
-                            bool transferM = decimal.TryParse(Console.ReadLine(), out depositM);
+                            bool transferM = decimal.TryParse(Console.ReadLine(), out  depositM);
                             while (transferM)
                             {
                                 if (depositM! > 0)
                                 {
                                     assets.funds[userIndex][choice] += depositM;
-                                    Console.WriteLine("Amount deposit: " + depositM + "Sek");
+                                    Console.WriteLine("Amount deposit: " + depositM + " Sek");
                                     Console.WriteLine("Your new account balance is.");
                                     Console.WriteLine(assets.accounts[userIndex][choice] + ": " + assets.funds[userIndex][choice] + " Sek");
-                                    Console.WriteLine("Press [Enter] to continue.");
+                                    Console.Write("Press [Enter] to continue.");
                                     Console.ReadLine();
                                     return;
                                 }
@@ -546,8 +546,8 @@ namespace BankApp
             //Made a method for the delays for cleaner code
             //Simple yet efective
 
-            /*Would be fun, sounded annoying
-            public static void welcomeTune()
+            //Would be fun, sounded annoying
+            /*public static void welcomeTune()
             {
                 Console.Beep(369, 200);
                 Console.Beep(369, 200);
@@ -607,12 +607,12 @@ namespace BankApp
                 {
                     delay++;
                     Console.Write(".");
-                    Thread.Sleep(150);
+                    Thread.Sleep(175);
                     if (delay > 10)
                     {
                         delay++;
                         Console.Write(".");
-                        Thread.Sleep(100);
+                        Thread.Sleep(75);
                     }
                 }
                 Console.Write('\u2713');
