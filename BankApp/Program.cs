@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Transactions;
 
 namespace BankApp
@@ -15,6 +16,7 @@ namespace BankApp
             bool runMenu = true;
             while (runMenu)
             {
+                Console.Clear();
                 //The if else is there because of console and powershell reads from diffrent dir..
                 string text;
                 if (File.Exists("../../../welcome.txt"))
@@ -47,6 +49,8 @@ namespace BankApp
         static int[] logins = { 0, 0, 0, 0, 0, };
         static string user;
         static string pincode;
+        static int userTries;
+        static DateTime lockoutTime;
         //activeUser sends value in to  class Account ot know what account to show, activUser gets its value if the login is a succses
         //it gets the same value  as index value from userNames and pincodes
         public static int activeUser;
@@ -54,7 +58,6 @@ namespace BankApp
         {
             var _accountTrue = new Account();
             bool mainMenu = true;
-
             while (mainMenu)
             {
                 Console.WriteLine("Please enter your user name.");
@@ -71,6 +74,7 @@ namespace BankApp
                         {
                             Console.WriteLine("Please enter your pincode");
                             Console.Write("Pincode:");
+                            logins[i] = 0;
                             pincode = Console.ReadLine();
                             Console.WriteLine(logins[i]);
                             Console.ReadLine();
@@ -83,31 +87,67 @@ namespace BankApp
                                 Console.WriteLine("Logout succssesful. Have a great day " + user + "!");
                                 Console.WriteLine("----RETURNING TO LOGIN-----");
                                 delay();
+                                Console.Clear();
                                 mainMenu = false;
                                 return;
                             }
                             if (pincodes[i] != pincode)
                             {
                                 logins[i] += 1;
-
-
-                            }
-                            if (logins[i] >= 3)
-                            {
-                                Stopwatch start = Stopwatch.StartNew();
-                                if(start.Elapsed.TotalMinutes > 1)
-                                {
-                                    logins[i] = 0;
-                                }
-
                             }
                         }
+                        else if (logins[i] == 3)
+                        {
+                            logins[i] += 1;                      
+                            lockoutTime = DateTime.Now.AddMinutes(1);
+                        }
+                        else
+                        {
+                            Console.WriteLine(logins[i]);
+                        }
+
+                    if (logins[i] == 4)
+                    {
+                            Console.WriteLine("User is locked out, please try again in 3 mins");
+                        if (DateTime.Now >= lockoutTime)
+                        {
+                            logins[i] = 0;
+                            lockoutTime = DateTime.Now;
+                        }
+                    }
                     }
                 }
                 Console.WriteLine("Invalid input, please try again.");
-                delay();
+                Console.WriteLine(lockoutTime);
             }
+           
         }
+
+        //public static void watchTimer(int userTries)
+        //{
+        //    if (userTries == 1)
+        //    {
+
+        //      DateTime start = DateTime.UtcNow;
+        //      for (int i = 0; i < logins.Length; i++)
+        //      {
+        //        if (logins[i] > 3)
+        //        {
+        //            if (DateTime.UtcNow > start.AddMinutes(1))
+        //            {
+        //                logins[i] = 0;
+        //                    userTries = 0;
+        //            }
+        //            else
+        //            {
+
+        //            }
+        //        }
+               
+        //      }
+        //    }
+
+        //}
 
         public class Account
         {
@@ -180,7 +220,7 @@ namespace BankApp
                 }
             }
 
-            //A super simple nester for loop to print out the jagged array in the assets class for the active use
+            //A super simple nesteed for loop to print out the jagged array in the assets class for the active use
             //MAKE OPTION TO GO BACK WORKING ON IT - LOW PRIO
             public void printAcc(string user)
             {
@@ -202,6 +242,7 @@ namespace BankApp
             {
                 int count = 0;
                 int choice1;
+                int choice2;
                 Console.WriteLine("\nChoose accout to deposit money to.\n");
 
                 for (int i = 0; i < assets.accounts[userIndex].Length; i++)
@@ -244,54 +285,63 @@ namespace BankApp
                         while (succ)
                         {
                             Console.Write("Enter Your choice: ");
-                            int choice2 = int.Parse(Console.ReadLine());
-                            if (choice1 != choice2)
+                            bool succ2 = int.TryParse(Console.ReadLine(), out choice2);
+                            if (succ2)
                             {
-                                Console.Clear();
-                                succ = false;
-                                Console.WriteLine("How much money do you want transfer?\n");
-                                Console.WriteLine("From:" + assets.accounts[userIndex][choice1] + "  " + assets.funds[userIndex][choice1] + " Sek");
-                                Console.WriteLine("--------");
-                                Console.WriteLine("To:" + assets.accounts[userIndex][choice2] + " " + assets.funds[userIndex][choice2] + " Sek\n");
-                                Console.Write("Enter the amout you want to transfer: ");
-                                decimal transfer = 0;
-                                bool transfersucc = decimal.TryParse(Console.ReadLine(), out transfer);
-                                Console.WriteLine("Checking balance, please hold.");
-                                delay();
-                                Console.Clear();
-                                while (transfersucc)
+                                if (choice1 != choice2)
                                 {
-                                    if (transfer <= assets.funds[userIndex][choice1] && transfer > 0)
+                                    Console.Clear();
+                                    succ = false;
+                                    Console.WriteLine("How much money do you want transfer?\n");
+                                    Console.WriteLine("From:" + assets.accounts[userIndex][choice1] + "  " + assets.funds[userIndex][choice1] + " Sek");
+                                    Console.WriteLine("--------");
+                                    Console.WriteLine("To:" + assets.accounts[userIndex][choice2] + " " + assets.funds[userIndex][choice2] + " Sek\n");
+                                    Console.Write("Enter the amout you want to transfer: ");
+                                    decimal transfer = 0;
+                                    bool transfersucc = decimal.TryParse(Console.ReadLine(), out transfer);
+                                    Console.WriteLine("Checking balance, please hold.");
+                                    delay();
+                                    while (transfersucc)
                                     {
-                                        assets.funds[userIndex][choice1] -= transfer;
-                                        assets.funds[userIndex][choice2] += transfer;
-                                        Console.WriteLine("You exchanges money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
-                                        Console.WriteLine("Your new balance is.");
-                                        Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
-                                        Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
-                                        Console.WriteLine("Press [Enter] to continue.");
-                                        Console.ReadLine();
-                                        break;
+                                        if (transfer <= assets.funds[userIndex][choice1] && transfer > 0)
+                                        {
+                                            assets.funds[userIndex][choice1] -= transfer;
+                                            assets.funds[userIndex][choice2] += transfer;
+                                            Console.WriteLine("You exchanges money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
+                                            Console.WriteLine("Your new balance is.");
+                                            Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
+                                            Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
+                                            Console.WriteLine("Press [Enter] to continue.");
+                                            Console.ReadLine();
+                                            Console.Clear();
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Invalid amount to transfer");
+                                            Console.WriteLine("Sending you back to deposit menu");
+                                            delay();
+                                            exchange();
+                                        }
                                     }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid amount to transfer");
-                                        Console.WriteLine("Sending you back to deposit menu");
-                                        delay();
-                                        exchange();
-                                    }
+                                    Console.WriteLine("Invalid input \nSending you back to deposit menu");
+                                    delay();
+                                    exchange();
                                 }
-                                Console.WriteLine("Invalid input \nSending you back to deposit menu");
-                                delay();
-                                exchange();
+                                else
+                                {
+                                    Console.WriteLine("You cant transfer money to the same account.");
+                                    Console.WriteLine("Press [Enter] to continue.");
+                                    Console.ReadLine();
+                                    Console.Clear();
+                                    exchange();
+                                }
                             }
                             else
                             {
-                                Console.WriteLine("You cant transfer money to the same account.");
-                                Console.WriteLine("Press [Enter] to continue.");
+                                Console.WriteLine("Invalid account number");
                                 Console.ReadLine();
-                                Console.Clear();
-                                exchange();
+
                             }
                         }
                     }
@@ -373,9 +423,9 @@ namespace BankApp
                                 delay();
                                 transferM = false;
                                 success = false;
+                                Console.Clear();
+                                MainMenu.MainLogin();
                                 return;
-
-
 
                             }
                             else
@@ -388,10 +438,6 @@ namespace BankApp
                         }
                         Console.WriteLine("Invalid input");
                         Console.WriteLine("Press [ENTER] to continue");
-
-
-
-
                     }
                     else
                     {
@@ -406,10 +452,9 @@ namespace BankApp
                 {
                     Console.WriteLine("Invalid input, please enter a NUMBER.");
                     delay();
+                    Console.Clear();
                     withdraw();
                 }
-
-
                 /*
                 OLD WITHDRAW METHOD , LOGIC DINT WORK JUST RE DID IT.
                 try
@@ -617,7 +662,6 @@ namespace BankApp
                 }
                 Console.Write('\u2713');
                 Thread.Sleep(600);
-                Console.Clear();
             }
     }
 }
