@@ -74,12 +74,12 @@ namespace BankApp
                         {
                             Console.WriteLine("Please enter your pincode");
                             Console.Write("Pincode:");
-                            logins[i] = 0;
                             pincode = Console.ReadLine();
                             Console.WriteLine(logins[i]);
                             Console.ReadLine();
                             if (pincodes[i] == pincode)
                             {
+                                logins[i] = 0;
                                 Console.Clear();
                                 Console.WriteLine("Login succsesful");
                                 _accountTrue.UserIndex = i;
@@ -108,7 +108,7 @@ namespace BankApp
 
                     if (logins[i] == 4)
                     {
-                            Console.WriteLine("User is locked out, please try again in 3 mins");
+                            Console.WriteLine("User is locked out, please try again in 3 mins from " + lockoutTime);
                         if (DateTime.Now >= lockoutTime)
                         {
                             logins[i] = 0;
@@ -321,11 +321,13 @@ namespace BankApp
                                             Console.WriteLine("Invalid amount to transfer");
                                             Console.WriteLine("Sending you back to deposit menu");
                                             delay();
+                                            Console.Clear();
                                             exchange();
                                         }
                                     }
                                     Console.WriteLine("Invalid input \nSending you back to deposit menu");
                                     delay();
+                                    Console.Clear();
                                     exchange();
                                 }
                                 else
@@ -349,6 +351,7 @@ namespace BankApp
                     {
                         Console.WriteLine("No account found  with that number. Please try again");
                         delay();
+                        Console.Clear();
                         exchange();
                     }
                 }
@@ -444,6 +447,7 @@ namespace BankApp
                         Console.WriteLine("No account found with that number.");
                         Console.WriteLine("Enter a NUMBER from the list above.");
                         delay();
+                        Console.Clear();
                         success = false;
                         withdraw();
                     }
