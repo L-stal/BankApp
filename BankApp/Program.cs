@@ -17,7 +17,7 @@ namespace BankApp
             while (runMenu)
             {
                 Console.Clear();
-                //The if else is need to be here because of console and powershell reads from diffrent dir..
+                //The if else needs to be here because of console and powershell reads from diffrent dir..
                 string text;
                 if (File.Exists("../../../welcome.txt"))
                 {
@@ -41,17 +41,17 @@ namespace BankApp
     }
     public static class MainMenu
     {
-        //Acount in main menu for comparing index valus, if index valus are the same run function AccountTrue
+        //Account in main menu for comparing index valus, if index valus are the same run function AccountTrue
         static string[] userNames = { "Robbe", "Kjell", "Leo", "Fibbe", "Mimmi" };
         static string[] pincodes = { "123", "12345", "1337", "13372", "13373" };
         //Made and array for logins, if the index value hits 0 freez out the user
         static int[] logins = { 3, 3, 3, 3, 3, };
         static string user;
         static string pincode;
-        //A simple timestamp to check in 3 mins has passed to reset the index values in the logins array
+        //A simple timestamp to check if 3 mins has passed to reset the index values in the logins array
         static DateTime lockoutTime;
         //activeUser sends value in to  class Account to know what account to show, activUser gets its value if the login is a succses
-        //it gets the same value  as index value from userNames and pincodes
+        //it gets the same value  as index value from userNames[] and pincodes[]
         public static int activeUser;
         public static async void MainLogin()
         {
@@ -66,7 +66,7 @@ namespace BankApp
                 // A for loop that compare user input to the names in userNames[]
                 for (int i = 0; i < userNames.Length; i++)
                 {
-                    //If the user exist in userName[] and the login index value i higher then 0 let the user input the pincode
+                    //If the user exist in userName[] and the login index value [i] is higher or  0 let the user input the pincode
                     if (userNames[i] == user)
                     {
                         if (logins[i] > 0)
@@ -102,7 +102,7 @@ namespace BankApp
                             logins[i] -= 1;                      
                             lockoutTime = DateTime.Now.AddMinutes(3);
                         }
-                    //Checks the time from when the user faild to input correct pincode and if 3 minuts have passed give 3 tires back to the user
+                    //Checks the time from when the user faild to input correct pincode and if 3 minuts have passed give 3 tries back to the user
                     if (logins[i] == -1)
                     {
                         Console.WriteLine("User is locked out, please try again in 3 mins from " + lockoutTime);
@@ -120,6 +120,9 @@ namespace BankApp
            
     }
 
+
+    //A simple menu prints out when the user is log in
+    //simple switch case takes imputs from user and runs methonds coresponding to input
         public class Account
         {
             protected int userIndex;
@@ -129,8 +132,6 @@ namespace BankApp
                 get { return userIndex; }
                 set { userIndex = value; }
             }
-
-            //A simple menu prints out when the user log in, simple swithc case takes imputs from user and runs methonds coresponding to input
             public void accountTrue(string user)
             {
                 var _assets = new assets();
@@ -150,31 +151,30 @@ namespace BankApp
 
                     switch (command)
                     {
-                        //Case 1 prints out the account for the activc user
+                        
                         case "1":
                             Console.Clear();
                             printAcc(user);
                             Console.Clear();
                             break;
-                        //Case 2 is the option to deposit funds between the users OWN accounts
+                      
                         case "2":
                             Console.Clear();
                             exchange();
                             Console.Clear();
                             break;
-                        //Case 3 is the method for withdrawing funds
+                    
                         case "3":
                             Console.Clear();
                             withdraw();
                             Console.Clear();
                             break;
-                        //Case 4 Deposit money
+                        
                         case "4":
                             Console.Clear();
                             deposit();
                             Console.Clear();    
                             break;
-                        //Case 5 lets the user log out and back to the start screen
                         case "5":
                             Console.Clear();
                             Console.WriteLine("You are logging out.");
@@ -258,11 +258,13 @@ namespace BankApp
                         }
                         bool succ = true;
                         while (succ)
+                        while (succ)
                         {
                             Console.Write("Enter Your choice: ");
                             bool succ2 = int.TryParse(Console.ReadLine(), out choice2);
                             if (succ2 && choice2 <= assets.accounts[userIndex].Length && choice2 >= 0)
                             {
+                                //If the choice is not the same and the one about let the user exchange money
                                 if (choice1 != choice2)
                                 {
                                     Console.Clear();
@@ -343,7 +345,7 @@ namespace BankApp
                 // Yes , all of these ...
             }
 
-            //The withdraw method bleow is very simaler to deposet except you only use one account
+            //The withdraw method below is very similar to deposet except you only use one account
             public void withdraw()
             {
                 // This array is used to check the user pincode
@@ -374,7 +376,8 @@ namespace BankApp
                         Console.Write("Amount: ");
                         bool transferM = decimal.TryParse(Console.ReadLine(), out withdrawM);
 
-                        int pintries = 0;//How many times the user input the wrong pincode
+                        int pinTries = 0;//How many times the user input the wrong pincode
+
                         //if the amount exist lets the user write in the pincode to the account to withdraw the money
                         while (transferM)
                         {
@@ -405,7 +408,7 @@ namespace BankApp
                                 }
                             }
                             //Sends the user back to the login menu if the user inputs to many tries
-                            else if (pintries >= 2)
+                            else if (pinTries >= 2)
                             {
                                 Console.WriteLine("To many tries,please log in again to countinue.");
                                 delay();
@@ -419,14 +422,15 @@ namespace BankApp
                             else
                             {
                                 Console.WriteLine("Wrong pincode please try again");
-                                Console.WriteLine(pintries);
-                                pintries++;
+                                Console.WriteLine(pinTries);
+                                pinTries++;
                             }
 
                         }
                         Console.WriteLine("Invalid input");
                         Console.WriteLine("Press [ENTER] to continue");
                         Console.ReadLine();
+                        Console.Clear();
                         withdraw();
 
                     }
@@ -450,6 +454,8 @@ namespace BankApp
                 //*Bzz *BzzZZ * *Slap* Got'em ....
             }
 
+            //Deposit method, very similar to the ones above,same for loops to pring accounts
+            //And the same TryParse for bug catching
             public void deposit()
             {
                 {
@@ -480,7 +486,7 @@ namespace BankApp
                             bool transferM = decimal.TryParse(Console.ReadLine(), out  depositM);
                             while (transferM)
                             {
-                                if (depositM! > 0)
+                                if (depositM !> 0)
                                 {
                                     assets.funds[userIndex][choice] += depositM;
                                     Console.WriteLine("Amount deposit: " + depositM + " Sek");
@@ -490,6 +496,7 @@ namespace BankApp
                                     Console.ReadLine();
                                     return;
                                 }
+                                // Same here, Else to catch bugs
                                 else
                                 {
                                     Console.WriteLine("Invalid amount to deposit");
@@ -528,6 +535,8 @@ namespace BankApp
                     get { return assetsIndex; }
                     set { assetsIndex = value; }
                 }
+                //Jagged array for accounts, if the user inputs a username and logs in
+                //set the value in the array to the same value as the array for userNames[]
                 public static string[][] accounts =
                 {
             new string[] {"Savings", "Salary"},
@@ -536,6 +545,7 @@ namespace BankApp
             new string[] {"Savings", "Salary","Cash for snacks","Vet Savings","Toy Account"},
             new string[] {"Savings", "Salary", "Knitting Salary","Cosplay funds","Fibbes Xmas present","Gaming Gear"},
              };
+                //Same as aboove but for the funds in the accounts
                 public static decimal[][] funds =
                 {
             new decimal[] {1000.50M,20000}
@@ -603,7 +613,7 @@ namespace BankApp
         }
 
         //Made a method for the delays for cleaner code
-        //Simple yet efective
+        //Simple yet effective
         public static void delay()
             {
                 int delay = 0;
