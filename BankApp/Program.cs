@@ -26,7 +26,6 @@ namespace BankApp
                 else
                 {
                     text = File.ReadAllText(".\\welcome.txt");
-
                 }
                 
                 Console.WriteLine(text);
@@ -46,10 +45,9 @@ namespace BankApp
         static string[] userNames = { "Robbe", "Kjell", "Leo", "Fibbe", "Mimmi" };
         static string[] pincodes = { "123", "12345", "1337", "13372", "13373" };
         //Save login tries to lock the user out //WORKING ON IT//-------------------------------------------
-        static int[] logins = { 0, 0, 0, 0, 0, };
+        static int[] logins = { 3, 3, 3, 3, 3, };
         static string user;
         static string pincode;
-        static int userTries;
         static DateTime lockoutTime;
         //activeUser sends value in to  class Account ot know what account to show, activUser gets its value if the login is a succses
         //it gets the same value  as index value from userNames and pincodes
@@ -70,16 +68,14 @@ namespace BankApp
                     //IF the input matches a userName login , user gets to input password
                     if (userNames[i] == user)
                     {
-                        if (logins[i] < 3)
+                        if (logins[i] > 0)
                         {
                             Console.WriteLine("Please enter your pincode");
                             Console.Write("Pincode:");
                             pincode = Console.ReadLine();
-                            Console.WriteLine(logins[i]);
-                            Console.ReadLine();
                             if (pincodes[i] == pincode)
                             {
-                                logins[i] = 0;
+                                logins[i] = 3;
                                 Console.Clear();
                                 Console.WriteLine("Login succsesful");
                                 _accountTrue.UserIndex = i;
@@ -93,61 +89,32 @@ namespace BankApp
                             }
                             if (pincodes[i] != pincode)
                             {
-                                logins[i] += 1;
+                                logins[i] -= 1;
+                                Console.WriteLine("Pincode is wrong " + logins[i] + " tries left\n");
                             }
                         }
-                        else if (logins[i] == 3)
+                        else if (logins[i] == 0)
                         {
-                            logins[i] += 1;                      
-                            lockoutTime = DateTime.Now.AddMinutes(1);
-                        }
-                        else
-                        {
-                            Console.WriteLine(logins[i]);
+                            logins[i] -= 1;                      
+                            lockoutTime = DateTime.Now.AddMinutes(3);
                         }
 
-                    if (logins[i] == 4)
+                    if (logins[i] == -1)
                     {
-                            Console.WriteLine("User is locked out, please try again in 3 mins from " + lockoutTime);
+                        Console.WriteLine("User is locked out, please try again in 3 mins from " + lockoutTime);
                         if (DateTime.Now >= lockoutTime)
                         {
-                            logins[i] = 0;
+                            logins[i] = 3;
                             lockoutTime = DateTime.Now;
+                            break;
                         }
                     }
-                    }
                 }
-                Console.WriteLine("Invalid input, please try again.");
-                Console.WriteLine(lockoutTime);
             }
-           
+
         }
-
-        //public static void watchTimer(int userTries)
-        //{
-        //    if (userTries == 1)
-        //    {
-
-        //      DateTime start = DateTime.UtcNow;
-        //      for (int i = 0; i < logins.Length; i++)
-        //      {
-        //        if (logins[i] > 3)
-        //        {
-        //            if (DateTime.UtcNow > start.AddMinutes(1))
-        //            {
-        //                logins[i] = 0;
-        //                    userTries = 0;
-        //            }
-        //            else
-        //            {
-
-        //            }
-        //        }
-               
-        //      }
-        //    }
-
-        //}
+           
+    }
 
         public class Account
         {
@@ -190,7 +157,7 @@ namespace BankApp
                             exchange();
                             Console.Clear();
                             break;
-                        //Case 3 is the method for withdrawing funds ------------------------------------------FIXA LOGUT------------------------------------------------------------------------------
+                        //Case 3 is the method for withdrawing funds
                         case "3":
                             Console.Clear();
                             withdraw();
@@ -235,7 +202,7 @@ namespace BankApp
                         Console.Write(assets.funds[userIndex][count++] + " Sek\n");
                     }
                 }
-                Console.WriteLine("\nPress Enter to continue");
+                Console.Write("\nPress Enter to continue");
                 Console.ReadLine();
             }
             public void exchange()
@@ -262,7 +229,7 @@ namespace BankApp
 
                 if (success)
                 {
-                    if (choice1 < assets.accounts[userIndex].Length)
+                    if (choice1 <= assets.accounts[userIndex].Length && choice1 >= 0)
                     {
                         Console.WriteLine("Choose account to deposit money from.\n");
                         for (int i = 0; i < assets.accounts[userIndex].Length; i++)
@@ -286,7 +253,7 @@ namespace BankApp
                         {
                             Console.Write("Enter Your choice: ");
                             bool succ2 = int.TryParse(Console.ReadLine(), out choice2);
-                            if (succ2)
+                            if (succ2 && choice2 <= assets.accounts[userIndex].Length && choice2 >= 0)
                             {
                                 if (choice1 != choice2)
                                 {
@@ -301,13 +268,14 @@ namespace BankApp
                                     bool transfersucc = decimal.TryParse(Console.ReadLine(), out transfer);
                                     Console.WriteLine("Checking balance, please hold.");
                                     delay();
+                                    Console.WriteLine("\n");
                                     while (transfersucc)
                                     {
                                         if (transfer <= assets.funds[userIndex][choice1] && transfer > 0)
                                         {
                                             assets.funds[userIndex][choice1] -= transfer;
                                             assets.funds[userIndex][choice2] += transfer;
-                                            Console.WriteLine("You exchanges money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
+                                            Console.WriteLine("You exchange money from: " + assets.accounts[userIndex][choice1] + "\nTo: " + assets.accounts[userIndex][choice2]);
                                             Console.WriteLine("Your new balance is.");
                                             Console.WriteLine(assets.accounts[userIndex][choice1] + ": " + assets.funds[userIndex][choice1] + " Sek");
                                             Console.WriteLine(assets.accounts[userIndex][choice2] + ": " + assets.funds[userIndex][choice2] + " Sek\n");
@@ -339,11 +307,11 @@ namespace BankApp
                                     exchange();
                                 }
                             }
-                            else
+                            else 
                             {
                                 Console.WriteLine("Invalid account number");
                                 Console.ReadLine();
-
+                          
                             }
                         }
                     }
@@ -386,7 +354,7 @@ namespace BankApp
 
                 while (success)
                 {
-                    if (choice < assets.funds[userIndex].Length)
+                    if (choice <= assets.funds[userIndex].Length && choice >= 0 )
                     {
                         decimal withdrawM;
                         Console.WriteLine("Enter the amount you want to withdraw from:" + assets.accounts[userIndex][choice]);
@@ -417,6 +385,7 @@ namespace BankApp
                                     Console.WriteLine("Invalid amount to withdraw");
                                     Console.WriteLine("Sending you back to the wtihdraw menu");
                                     delay();
+                                    Console.Clear();
                                     withdraw();
                                 }
                             }
@@ -441,6 +410,9 @@ namespace BankApp
                         }
                         Console.WriteLine("Invalid input");
                         Console.WriteLine("Press [ENTER] to continue");
+                        Console.ReadLine();
+                        withdraw();
+
                     }
                     else
                     {
@@ -459,42 +431,7 @@ namespace BankApp
                     Console.Clear();
                     withdraw();
                 }
-                /*
-                OLD WITHDRAW METHOD , LOGIC DINT WORK JUST RE DID IT.
-                try
-                {
-                    Console.Write("Enter account number: ");
-                    int choice1;
-                    choice1 = int.Parse(Console.ReadLine());
-                    if (choice1 <  assets.funds[userIndex].Length) {
-                        Console.WriteLine("How much money do you want to withdraw?");
-                        Console.Write("Enter the amount: ");
-                        decimal withdrawM = decimal.Parse(Console.ReadLine());
-                        //Fixa så man inte kan skriva tillexemple 1001 och välja konto
-                        if (withdrawM <= choice1)
-                        {
-                            assets.funds[userIndex][choice1] -= withdrawM;
-                            Console.WriteLine("You took out:" + withdrawM + "\n Your new balance is:" + choice1);
-                            Console.WriteLine("Press [Enter] to continue");
-                            Console.ReadLine();
-                        }
-                        else
-                        {
-                            Console.WriteLine("There is not enough money to make the transfer. Please choose another account");
-                            Console.ReadLine();
-                            Console.Clear();
-                            withdraw();
 
-                        }
-                    }
-                }
-                catch
-                {
-                    Console.WriteLine("Invalid input, choose from the list above.");
-                    Console.ReadLine();
-                    Console.Clear();
-                    withdraw();
-            }*/
             }
 
             public void deposit()
@@ -519,7 +456,7 @@ namespace BankApp
 
                     while (success)
                     {
-                        if (choice < assets.funds[userIndex].Length)
+                        if (choice <= assets.funds[userIndex].Length && choice >= 0)
                         {
                             decimal depositM;
                             Console.WriteLine("Enter the amount you want to deposit to: " + assets.accounts[userIndex][choice]);
