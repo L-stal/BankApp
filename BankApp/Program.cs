@@ -42,7 +42,7 @@ namespace BankApp
     public static class MainMenu
     {
         //Account in main menu for comparing index valus, if index valus are the same run function AccountTrue
-        static string[] userNames = { "Robbe", "Kjell", "Leo", "Fibbe", "Mimmi" };
+        static string[] userNames = { "ROBBE", "KJELL", "LEO", "FIBBE", "MIMMI" };
         static string[] pincodes = { "123", "12345", "1337", "13372", "13373" };
         //Made and array for logins, if the index value hits 0 freez out the user
         static int[] logins = { 3, 3, 3, 3, 3, };
@@ -67,7 +67,7 @@ namespace BankApp
                 for (int i = 0; i < userNames.Length; i++)
                 {
                     //If the user exist in userName[] and the login index value [i] is higher or  0 let the user input the pincode
-                    if (userNames[i] == user)
+                    if (userNames[i] == user.ToUpper())
                     {
                         if (logins[i] > 0)
                         {
@@ -81,7 +81,7 @@ namespace BankApp
                                 Console.WriteLine("Login succsesful");
                                 _accountTrue.UserIndex = i;//Sets the value of userIndex to the same value as the userNames and pincodes
                                 //UserIndex is used to know what accounts and funds to print out (Check assets class)
-                                _accountTrue.accountTrue(user);
+                                _accountTrue.accountTrue(user.ToUpper());
                                 Console.WriteLine("Logout succssesful. Have a great day " + user + "!");
                                 Console.WriteLine("----RETURNING TO LOGIN-----");
                                 delay();
